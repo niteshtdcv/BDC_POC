@@ -4,12 +4,7 @@ annotate service.ARMaster with @(
     UI.FieldGroup #GeneratedGroup: {
         $Type: 'UI.FieldGroupType',
         Data : [
-            {
-                $Type: 'UI.DataField',
-
-                Value: AccessCode,
-            },
-
+           
             {
                 $Type: 'UI.DataField',
 
