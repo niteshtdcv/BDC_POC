@@ -1,6 +1,6 @@
 namespace com.sap.bdc;
 
-using { cuid, managed, temporal } from '@sap/cds/common';
+using { cuid, managed } from '@sap/cds/common';
 
 entity ARMaster : cuid, managed {
   RequestID__c : String(50);
