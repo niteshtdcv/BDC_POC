@@ -1,0 +1,112 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:u="sap.ui.unified"
+    xmlns:l="sap.ui.layout">
+
+    <Dialog
+        id="massUploadDialog"
+        title="Mass Upload - AR Master Records"
+        contentWidth="700px"
+        resizable="true"
+        draggable="true"
+        state="None">
+
+        <content>
+            <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+
+                <!-- Step instructions -->
+                <MessageStrip
+                    text="Step 1: Download the template below.  Step 2: Fill in your data (Service Name and Role Name are required).  Step 3: Upload the file and submit for approval."
+                    type="Information"
+                    showIcon="true"
+                    class="sapUiSmallMarginBottom"/>
+
+                <!-- Download template + File upload on the same row -->
+                <l:HorizontalLayout class="sapUiSmallMarginBottom">
+                    <Button
+                        text="Download Template"
+                        icon="sap-icon://download"
+                        type="Transparent"
+                        press=".onDownloadTemplate"
+                        class="sapUiSmallMarginEnd"/>
+
+                    <u:FileUploader
+                        id="massFileUploader"
+                        fileType="xlsx,xls,csv"
+                        placeholder="Choose Excel (.xlsx) or CSV file..."
+                        width="370px"
+                        icon="sap-icon://browse-folder"
+                        change=".onFileChange"
+                        uploadOnChange="false"
+                        style="Transparent"
+                        buttonText="Browse"/>
+                </l:HorizontalLayout>
+
+                <!-- Status strip + preview table (visible after file parsed) -->
+                <VBox visible="{upload>/previewVisible}">
+
+                    <MessageStrip
+                        text="{upload>/statusMessage}"
+                        type="{upload>/messageType}"
+                        showIcon="true"
+                        class="sapUiTinyMarginBottom"/>
+
+                    <!-- Preview table – shows up to 5 rows -->
+                    <VBox visible="{= ${upload>/totalRecords} > 0 }">
+                        <Title
+                            text="{= 'Preview – first 5 of ' + ${upload>/totalRecords} + ' record(s)'}"
+                            titleStyle="H6"
+                            class="sapUiTinyMarginBottom"/>
+
+                        <Table
+                            id="previewTable"
+                            items="{upload>/previewData}"
+                            noDataText="No records to preview"
+                            fixedLayout="false"
+                            class="sapUiTinyMarginBottom">
+
+                            <columns>
+                                <Column width="150px"><Text text="Service Name"/></Column>
+                                <Column width="140px"><Text text="Role Name"/></Column>
+                                <Column width="140px"><Text text="Entity Name"/></Column>
+                                <Column width="110px"><Text text="Company Code"/></Column>
+                                <Column><Text text="Country / Region"/></Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{upload>ServiceName}"/>
+                                        <Text text="{upload>RoleName}"/>
+                                        <Text text="{upload>EntityName}"/>
+                                        <Text text="{upload>CompanyCode}"/>
+                                        <Text text="{upload>CountryLocation}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </content>
+
+        <buttons>
+            <!-- Submit button – text changes to "Uploading…" during request -->
+            <Button
+                id="submitButton"
+                icon="sap-icon://upload"
+                type="Emphasized"
+                press=".onSubmitUpload"
+                enabled="{= ${upload>/submitEnabled} &amp;&amp; !${upload>/uploading} }"
+                text="{= ${upload>/uploading} ? 'Uploading\u2026' : 'Upload \u0026 Submit for Approval' }"/>
+
+            <Button
+                text="Cancel"
+                press=".onDialogClose"/>
+        </buttons>
+
+    </Dialog>
+
+</core:FragmentDefinition>

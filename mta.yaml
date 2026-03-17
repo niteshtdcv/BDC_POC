@@ -1,0 +1,190 @@
+_schema-version: 3.3.0
+ID: BDC_POC
+description: A simple CAP project.
+version: 1.0.0
+modules:
+  - name: BDC_POC-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: BDC_POC-auth
+      - name: BDC_POC-destination
+      - name: BDC_POC-db
+      - name: BDC_POC-html5-repo-host
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+      instances: 1
+      memory: 512M
+      disk-quota: 1024M
+    build-parameters:
+      builder: npm-ci
+  - name: BDC_POC-app-deployer
+    type: com.sap.application.content
+    path: gen
+    requires:
+      - name: BDC_POC-auth
+      - name: srv-api
+      - name: BDC_POC-html5-repo-host
+        parameters:
+          config:
+            HTML5Runtime_enabled: true
+          content-target: true
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                Name: srv-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+            existing_destinations_policy: update
+    build-parameters:
+      build-result: app/
+      requires:
+        - artifacts:
+            - arequest.zip
+          name: BDC_POCarequest
+          target-path: app/
+        - artifacts:
+            - armaster.zip
+          name: armaster
+          target-path: app/
+  - name: BDC_POCarequest
+    type: html5
+    path: app/arequest
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+  - name: armaster
+    type: html5
+    path: app/armaster
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+  - name: BDC_POC-db-deployer
+    type: hdb
+    path: gen/db
+    requires:
+      - name: BDC_POC-db
+    parameters:
+      buildpack: nodejs_buildpack
+  - name: BDC_POC-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: BDC_POC-destination
+        parameters:
+          content-target: true
+      - name: BDC_POC-html5-repo-host
+        parameters:
+          service-key:
+            name: BDC_POC-html5-repo-host-key
+      - name: BDC_POC-auth
+        parameters:
+          service-key:
+            name: BDC_POC-auth-key
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: BDC_POC_html_repo_host
+              ServiceInstanceName: BDC_POC-html5-service
+              ServiceKeyName: BDC_POC-html5-repo-host-key
+              sap.cloud.service: BDC_POC
+            - Authentication: OAuth2UserTokenExchange
+              Name: BDC_POC_uaa
+              ServiceInstanceName: BDC_POC-xsuaa-service
+              ServiceKeyName: BDC_POC-auth-key
+              sap.cloud.service: BDC_POC
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+resources:
+  - name: BDC_POC-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        tenant-mode: dedicated
+        xsappname: BDC_POC-${org}-${space}
+        role-collections:
+          - name: 'User (BDC_POC ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.User'
+          - name: 'Admin (BDC_POC ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.Admin'
+      path: ./xs-security.json
+      service: xsuaa
+      service-name: BDC_POC-xsuaa-service
+      service-plan: application
+  - name: BDC_POC-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+              - Authentication: NoAuthentication
+                HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
+                Name: srv-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+            existing_destinations_policy: update
+      service: destination
+      service-plan: lite
+    requires:
+      - name: srv-api
+  - name: BDC_POC-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: BDC_POC-html5-service
+      service-plan: app-host
+  - name: BDC_POC-db
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+      service-name: BDC_POC-db
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production

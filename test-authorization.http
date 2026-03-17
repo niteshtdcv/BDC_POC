@@ -1,0 +1,246 @@
+### Test Authorization Flow - CAP BDC Application
+
+### 1. Get all ARMaster records (Master Authorization Table)
+GET http://localhost:4004/odata/v4/bdc/ARMaster
+Accept: application/json
+
+### 2. Get all ApproverMaster records (Master Authorization Table)
+GET http://localhost:4004/odata/v4/bdc/ApproverMaster
+Accept: application/json
+
+### 3. Create AR Request - Valid ServiceName (Should succeed and copy AccessKey)
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "FinanceService",
+  "REQUESTOR": "john.doe@company.com",
+  "SHORT_DESCRIPTION__C": "Request access to Finance Service",
+  "ROLE_NAME": "Finance_User",
+  "ENTITY_NAME": "Finance_Entity",
+  "COMPANY_CODE": "1000",
+  "COUNTRY_LOCATION": "USA",
+  "BUSINESS_UNIT": "Corporate Finance",
+  "TRIGRAM_COMPANY": "FIN",
+  "ORGANIZATION_UNIT": "Finance Dept",
+  "VALID_FROM": "2024-01-20",
+  "VALID_TO": "2024-12-31"
+}
+
+### 4. Create AR Request - Invalid ServiceName (Should fail with error)
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "InvalidService",
+  "REQUESTOR": "jane.smith@company.com",
+  "SHORT_DESCRIPTION__C": "Request access to Invalid Service"
+}
+
+### 5. Create AR Request - Missing ServiceName (Should fail with error)
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+
+{
+  "REQUESTOR": "test.user@company.com",
+  "SHORT_DESCRIPTION__C": "Request without service name"
+}
+
+### 6. Create Approver Request - Valid ServiceName (Should succeed and copy AccessKey)
+POST http://localhost:4004/odata/v4/bdc/ApproverChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "HRService",
+  "REQUESTOR": "approver1@company.com",
+  "SHORT_DESCRIPTION__C": "Request HR approver access",
+  "ROLE_NAME": "HR_Approver_L1",
+  "ENTITY_NAME": "HR_Entity",
+  "COMPANY_CODE": "2000",
+  "COUNTRY_LOCATION": "Germany",
+  "BUSINESS_UNIT": "Human Resources",
+  "TRIGRAM_COMPANY": "HRD",
+  "APPROVER": "hr.manager@company.com",
+  "VALID_FROM": "2024-01-20",
+  "VALID_TO": "2024-12-31"
+}
+
+### 7. Create Approver Request - Invalid ServiceName (Should fail with error)
+POST http://localhost:4004/odata/v4/bdc/ApproverChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "NonExistentService",
+  "REQUESTOR": "approver2@company.com",
+  "SHORT_DESCRIPTION__C": "Request invalid service access"
+}
+
+### 8. Get all AR Requests (Check ACCESS_KEY is populated)
+GET http://localhost:4004/odata/v4/bdc/ARChangeLog
+Accept: application/json
+
+### 9. Get all Approver Requests (Check ACCESS_KEY is populated)
+GET http://localhost:4004/odata/v4/bdc/ApproverChangeLog
+Accept: application/json
+
+### 10. Create AR Request - ProcurementService
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "ProcurementService",
+  "REQUESTOR": "procurement.user@company.com",
+  "SHORT_DESCRIPTION__C": "Need procurement access",
+  "ROLE_NAME": "Procurement_Buyer",
+  "ENTITY_NAME": "Procurement_Entity",
+  "COMPANY_CODE": "3000",
+  "COUNTRY_LOCATION": "UK",
+  "BUSINESS_UNIT": "Operations",
+  "PURCHASE_ORGANIZATION": "PO_EMEA",
+  "REGION_SITE": "London",
+  "VALID_FROM": "2024-02-01",
+  "VALID_TO": "2024-12-31"
+}
+
+### 11. Create AR Request - SalesService
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+Authorization: Basic admin:admin
+
+{
+  "SERVICE_NAME": "SalesService",
+  "REQUESTOR": "sales.rep@company.com",
+  "SHORT_DESCRIPTION__C": "Sales access request",
+  "ROLE_NAME": "Sales_Representative",
+  "ENTITY_NAME": "Sales_Entity",
+  "COMPANY_CODE": "4000",
+  "COUNTRY_LOCATION": "France",
+  "BUSINESS_UNIT": "Sales",
+  "SALES_ORGANIZATION": "SO_EMEA",
+  "MARKET_AREA": "Western Europe",
+  "REGION_SITE": "Paris",
+  "VALID_FROM": "2024-02-01",
+  "VALID_TO": "2024-12-31",
+  "IsActiveEntity": true 
+}
+
+### 12. Create Approver Request - ProcurementService
+POST http://localhost:4004/odata/v4/bdc/ApproverChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "ProcurementService",
+  "REQUESTOR": "procurement.approver@company.com",
+  "SHORT_DESCRIPTION__C": "Procurement approver access",
+  "ROLE_NAME": "Procurement_Approver",
+  "ENTITY_NAME": "Procurement_Approval",
+  "COMPANY_CODE": "3000",
+  "COUNTRY_LOCATION": "UK",
+  "BUSINESS_UNIT": "Operations",
+  "APPROVER": "procurement.manager@company.com",
+  "REGION_SITE": "London"
+}
+
+### 13. Create Approver Request - SalesService
+POST http://localhost:4004/odata/v4/bdc/ApproverChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "SalesService",
+  "REQUESTOR": "sales.approver@company.com",
+  "SHORT_DESCRIPTION__C": "Sales approver access",
+  "ROLE_NAME": "Sales_Approver",
+  "ENTITY_NAME": "Sales_Approval",
+  "COMPANY_CODE": "4000",
+  "COUNTRY_LOCATION": "France",
+  "BUSINESS_UNIT": "Sales",
+  "APPROVER": "sales.director@company.com",
+  "MARKET_AREA": "Western Europe"
+}
+
+### 14. Create new ARMaster entry
+POST http://localhost:4004/odata/v4/bdc/ARMaster
+Content-Type: application/json
+Authorization: Basic admin:admin
+
+{
+  "ServiceName": "IT Service",
+  "AccessCode": "ACC-IT-2024-004",
+  "RoleName": "IT_Admin",
+  "EntityName": "IT_Entity",
+  "Status__c": "Active",
+  "ShortDescription__c": "IT Service Access",
+  "Submitter__c": "admin@company.com",
+  "RequestID__c": "REQ-IT-001",
+  "CompanyCode": "1000",
+  "CountryLocation": "USA",
+  "TrigramCompany": "ITS",
+  "BusinessUnit": "IT Operations",
+  "OrganizationUnit": "IT Department",
+  "RegionSite": "New York",
+  "ValidFrom": "2024-01-01",
+  "ValidTo": "2024-12-31",
+  "RoleStatus": "Active",
+  "IsActiveEntity": true    
+}
+
+### 15. Create new ApproverMaster entry
+POST http://localhost:4004/odata/v4/bdc/ApproverMaster
+Content-Type: application/json
+
+{
+  "ServiceName": "ITService",
+  "RefValue1": "IT_Approver",
+  "Status__c": "Active",
+  "ShortDescription": "IT Approver Access"
+}
+
+### 16. Test newly created master - Create AR Request for ITService
+POST http://localhost:4004/odata/v4/bdc/ARChangeLog
+Content-Type: application/json
+
+{
+  "SERVICE_NAME": "ITService",
+  "REQUESTOR": "it.user@company.com",
+  "SHORT_DESCRIPTION__C": "IT Service access needed",
+  "ROLE_NAME": "IT_Support",
+  "ENTITY_NAME": "IT_Entity",
+  "COMPANY_CODE": "5000",
+  "COUNTRY_LOCATION": "India",
+  "BUSINESS_UNIT": "IT Operations",
+  "TRIGRAM_COMPANY": "ITO",
+  "AR_SIGNUM": "ITSUP001"
+}
+
+### 17. Delete AR Request by ID (Replace {ID} with actual ID from GET request)
+DELETE http://localhost:4004/odata/v4/bdc/ARChangeLog({ID})
+
+### 18. Delete Approver Request by ID (Replace {ID} with actual ID from GET request)
+DELETE http://localhost:4004/odata/v4/bdc/ApproverChangeLog({ID})
+
+### 19. Delete specific AR Request example
+DELETE http://localhost:4004/odata/v4/bdc/ARChangeLog(ID=12345678-1234-1234-1234-123456789012,IsActiveEntity=true)
+
+### 20. Delete specific Approver Request example
+DELETE http://localhost:4004/odata/v4/bdc/ApproverChangeLog(ID=87654321-4321-4321-4321-210987654321,IsActiveEntity=true)
+
+
+### 21. Approve ARMaster Request (Replace {ID} with actual ID from ARMaster)
+POST http://localhost:4004/odata/v4/bdc/approveRequest(id='a757b9f1-770d-41e3-acbe-9eb475e05b9e',action='approve',entity='ARMaster')
+
+### 22. Reject ARMaster Request (Replace {ID} with actual ID from ARMaster)
+GET http://localhost:4004/odata/v4/bdc/approveRequest(id='{ID}',action='reject',entity='ARMaster')
+
+### 23. Approve ARChangeLog Request (Replace {ID} with actual ID from ARChangeLog)
+GET http://localhost:4004/odata/v4/bdc/approveRequest(id='{ID}',action='approve',entity='ARChangeLog')
+
+### 24. Reject ARChangeLog Request (Replace {ID} with actual ID from ARChangeLog)
+GET http://localhost:4004/odata/v4/bdc/approveRequest(id='{ID}',action='reject',entity='ARChangeLog')
+
+### 25. Get all ARMaster records (including pending/rejected - Admin view)
+GET http://localhost:4004/odata/v4/bdc/ARMasterAll
+Accept: application/json
+
+### 26. Get all ARChangeLog records (including pending/rejected - Admin view)
+GET http://localhost:4004/odata/v4/bdc/ARChangeLogAll
+Accept: application/json

@@ -1,0 +1,191 @@
+{
+	"_version": "1.76.0",
+	"sap.app": {
+		"id": "armaster",
+		"type": "application",
+		"i18n": {
+			"bundleUrl": "i18n/i18n.properties",
+			"supportedLocales": [
+				""
+			]
+		},
+		"applicationVersion": {
+			"version": "0.0.1"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"crossNavigation": {
+			"inbounds": {
+				"armaster-display": {
+					"semanticObject": "armaster",
+					"action": "display",
+					"title": "{{appTitle}}",
+					"signature": {
+						"parameters": {},
+						"additionalParameters": "allowed"
+					}
+				},
+				"armastersemobj-manage": {
+					"semanticObject": "armastersemobj",
+					"action": "manage",
+					"title": "{{armastersemobj-manage.flpTitle}}",
+					"subTitle": "{{armastersemobj-manage.flpSubtitle}}",
+					"signature": {
+						"parameters": {},
+						"additionalParameters": "allowed"
+					}
+				}
+			}
+		},
+		"resources": "resources.json",
+		"sourceTemplate": {
+			"id": "@sap/generator-fiori:lrop",
+			"version": "1.18.5",
+			"toolsId": "def0c2b4-71b6-4823-92aa-b309c4424eb1"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/odata/v4/bdc/",
+				"type": "OData",
+				"settings": {
+					"annotations": [],
+					"odataVersion": "4.0"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": true,
+		"dependencies": {
+			"minUI5Version": "1.145.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.fe.templates": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "armaster.i18n.i18n",
+					"supportedLocales": [
+						""
+					]
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"operationMode": "Server",
+					"autoExpandSelect": true,
+					"earlyRequests": true
+				}
+			},
+			"@i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"uri": "i18n/i18n.properties",
+				"settings": {
+					"supportedLocales": [
+						""
+					]
+				}
+			}
+		},
+		"resources": {
+			"css": []
+		},
+		"routing": {
+			"config": {},
+			"routes": [
+				{
+					"pattern": ":?query:",
+					"name": "ARMasterList",
+					"target": "ARMasterList"
+				},
+				{
+					"pattern": "ARMaster({key}):?query:",
+					"name": "ARMasterObjectPage",
+					"target": "ARMasterObjectPage"
+				}
+			],
+			"targets": {
+				"ARMasterList": {
+					"type": "Component",
+					"id": "ARMasterList",
+					"name": "sap.fe.templates.ListReport",
+					"options": {
+						"settings": {
+							"contextPath": "/ARMaster",
+							"variantManagement": "Page",
+							"navigation": {
+								"ARMaster": {
+									"detail": {
+										"route": "ARMasterObjectPage"
+									}
+								}
+							},
+							"controlConfiguration": {
+								"@com.sap.vocabularies.UI.v1.LineItem": {
+									"actions": {
+										"MassUpload": {
+											"press": "armaster.ext.controller.ListReportExtension.onMassUpload",
+											"enabled": true,
+											"visible": true,
+											"text": "{i18n>massUpload}"
+										}
+									},
+									"tableSettings": {
+										"type": "ResponsiveTable"
+									}
+								}
+							},
+							"initialLoad": "Enabled"
+						}
+					}
+				},
+				"ARMasterObjectPage": {
+					"type": "Component",
+					"id": "ARMasterObjectPage",
+					"name": "sap.fe.templates.ObjectPage",
+					"options": {
+						"settings": {
+							"editableHeaderContent": false,
+							"contextPath": "/ARMaster"
+						}
+					}
+				}
+			}
+		},
+		"flexBundle": false
+	},
+	"sap.fiori": {
+		"registrationIds": [],
+		"archeType": "transactional"
+	},
+	"sap.cloud": {
+		"public": true,
+		"service": "BDC_POC"
+	}
+}
