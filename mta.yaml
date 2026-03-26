@@ -72,6 +72,8 @@ modules:
       commands:
         - npm install
         - npm run build:cf
+        - npm ci
+        - npm run build
       supported-platforms:
         []
   - name: armaster
@@ -83,6 +85,8 @@ modules:
       commands:
         - npm install
         - npm run build:cf
+        - npm ci
+        - npm run build
       supported-platforms:
         []
   - name: BDC_POC-db-deployer
