@@ -123,12 +123,12 @@ annotate service.ARMaster with @(
     UI.LineItem                  : [
         {
             $Type: 'UI.DataField',
-            Label: 'User Access Code',
+            Label: 'Access Code',
             Value: AccessCode,
         },
         {
             $Type: 'UI.DataField',
-
+            Label: 'Service',
             Value: ServiceName,
         },
         {
