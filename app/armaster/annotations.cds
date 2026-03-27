@@ -123,7 +123,7 @@ annotate service.ARMaster with @(
     UI.LineItem                  : [
         {
             $Type: 'UI.DataField',
-
+            Label: 'User Access Code',
             Value: AccessCode,
         },
         {
