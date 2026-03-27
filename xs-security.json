@@ -1,50 +1,53 @@
 {
-  "xsappname": "BDC_POC",
-  "tenant-mode": "dedicated",
-  "scopes": [
-    {
-      "name": "$XSAPPNAME.User",
-      "description": "User"
-    },
-    {
-      "name": "$XSAPPNAME.Admin",
-      "description": "Admin"
-    }
-  ],
-  "attributes": [{
-      "name": "APPROVAL_STATUS",
-      "description": "Approved data  restriction for users",
-      "valueType": "string"
-    }],
-  "role-templates": [
-    {
-      "name": "User",
-      "description": "User RC",
-      "scope-references": [
-        "$XSAPPNAME.User"
-      ],
-      "attribute-references": [ {
-          "name": "APPROVAL_STATUS",
-          "value": "Approved"
-        }]
-    },
-    {
-      "name": "Admin",
-      "description": "Admin RC",
-      "scope-references": [
-        "$XSAPPNAME.Admin"
-      ]
-     
-    }
-  ],
-  "oauth2-configuration": {
-    "token-validity": 900,
-    "refresh-token-validity": 1800,
-    "redirect-uris": [
-      "https://api.cf.eu10-004.hana.ondemand.com",
-      "https://ericsson-build-pocnew-build-pocnew-bdc-poc-srv.cfapps.eu10-004.hana.ondemand.com",
-      "https://ericsson-build-pocnew.launchpad.cfapps.eu10.hana.ondemand.com"
-    ],
-    "autoapprove": "true"
+ "xsappname": "BDC_POC",
+ "tenant-mode": "dedicated",
+ "scopes": [
+  {
+   "name": "$XSAPPNAME.User",
+   "description": "User"
+  },
+  {
+   "name": "$XSAPPNAME.Admin",
+   "description": "Admin"
   }
+ ],
+ "attributes": [
+  {
+   "name": "APPROVAL_STATUS",
+   "description": "Approved data  restriction for users",
+   "valueType": "string"
+  }
+ ],
+ "role-templates": [
+  {
+   "name": "User",
+   "description": "User RC",
+   "scope-references": [
+    "$XSAPPNAME.User"
+   ],
+   "attribute-references": [
+    {
+     "name": "APPROVAL_STATUS",
+     "value": "Approved"
+    }
+   ]
+  },
+  {
+   "name": "Admin",
+   "description": "Admin RC",
+   "scope-references": [
+    "$XSAPPNAME.Admin"
+   ]
+  }
+ ],
+ "oauth2-configuration": {
+  "token-validity": 900,
+  "refresh-token-validity": 1800,
+  "redirect-uris": [
+   "https://api.cf.eu10-004.hana.ondemand.com",
+   "https://ericsson-build-pocnew-build-pocnew-bdc-poc-srv.cfapps.eu10-004.hana.ondemand.com",
+   "https://ericsson-build-pocnew.launchpad.cfapps.eu10.hana.ondemand.com"
+  ],
+  "autoapprove": "true"
+ }
 }
