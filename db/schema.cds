@@ -1,7 +1,7 @@
 namespace com.sap.bdc;
 
 using { cuid, managed } from '@sap/cds/common';
-
+// ARMASTER Table
 entity ARMaster : cuid, managed {
   RequestID__c : String(50);
   Submitter__c : String(100);
