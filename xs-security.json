@@ -45,8 +45,8 @@
   "refresh-token-validity": 1800,
   "redirect-uris": [
    "https://api.cf.eu10-004.hana.ondemand.com",
-   "https://ericsson-build-pocnew-build-pocnew-bdc-poc-srv.cfapps.eu10-004.hana.ondemand.com",
-   "https://ericsson-build-pocnew.launchpad.cfapps.eu10.hana.ondemand.com"
+   "https://ericsson-build-dev-build-dev-bdc-poc-srv.cfapps.eu10-004.hana.ondemand.com",
+   "https://ericsson-build-dev.launchpad.cfapps.eu10.hana.ondemand.com"
   ],
   "autoapprove": "true"
  }
