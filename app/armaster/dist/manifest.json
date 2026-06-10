@@ -114,7 +114,12 @@
 			}
 		},
 		"resources": {
-			"css": []
+			"css": [],
+			"js": [
+				{
+					"uri": "libs/xlsx.full.min.js"
+				}
+			]
 		},
 		"routing": {
 			"config": {},
